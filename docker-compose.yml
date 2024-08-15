@@ -1,0 +1,19 @@
+services:
+  cdktf:
+    image: ${IMAGE_NAME:-cdktf}:${DOCKER_TAG:-latest}
+    build:
+      # docker basically "cd"'s into this directory before invoking docker build
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        http_proxy: $http_proxy
+        https_proxy: $https_proxy
+        no_proxy: $no_proxy
+    container_name: cdktf
+    entrypoint: tail -f /dev/null
+    restart: unless-stopped
+    volumes:
+      # overwrite src dir from container with local src
+      - "./:/app"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
